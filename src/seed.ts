@@ -3,10 +3,11 @@ import { resolve } from 'node:path';
 import { Pool } from 'pg';
 import { loadConfig } from './config.ts';
 import { migrate } from './migrate.ts';
+import { SEED_PEOPLE } from './seedPeople.ts';
 import { PgStore, type NewInvoice, type Store } from './store.ts';
 import { splitInclusive } from './tax.ts';
 
-/** Same generator as shoplab-orders' seed, so the totals and shoppers line up. Order ids are derived, not orders' own. */
+/** Same generator as shoplab-orders' seed, so the totals and shoppers line up, and the shoppers are the people iam seeds. Order ids are derived, not orders' own. */
 function mulberry32(seed: number) {
   return () => {
     seed |= 0;
@@ -39,8 +40,8 @@ export function seedInvoices(count = 100, seed = 11): NewInvoice[] {
     return {
       orderId: uuidFrom(`shoplab-seed-order-${i + 1}`),
       userId: seedUserId(shopper),
-      customerEmail: `shopper${shopper}@shoplab.test`,
-      customerName: `Seed Shopper ${shopper}`,
+      customerEmail: SEED_PEOPLE[shopper][0],
+      customerName: SEED_PEOPLE[shopper][1],
       subtotal,
       tax,
       total,
